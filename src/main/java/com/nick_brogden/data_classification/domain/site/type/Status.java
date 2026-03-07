@@ -1,4 +1,4 @@
-package com.nick_brogden.data_classification.domain.task.type;
+package com.nick_brogden.data_classification.domain.site.type;
 
 public enum Status {
 

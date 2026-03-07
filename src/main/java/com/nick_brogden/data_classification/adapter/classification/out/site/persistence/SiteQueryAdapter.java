@@ -1,12 +1,12 @@
-package com.nick_brogden.data_classification.adapter.classification.out.task.persistence;
+package com.nick_brogden.data_classification.adapter.classification.out.site.persistence;
 
-import com.nick_brogden.data_classification.port.TaskQueryPort;
+import com.nick_brogden.data_classification.port.SiteQueryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TaskQueryAdapter implements TaskQueryPort {
+public class SiteQueryAdapter implements SiteQueryPort {
 
     @Override
     public boolean existsByDomain(String domain) {

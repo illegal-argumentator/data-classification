@@ -1,14 +1,14 @@
-package com.nick_brogden.data_classification.adapter.classification.out.task.persistence;
+package com.nick_brogden.data_classification.adapter.classification.out.site.persistence;
 
-import com.nick_brogden.data_classification.domain.task.type.Category;
-import com.nick_brogden.data_classification.domain.task.type.Status;
+import com.nick_brogden.data_classification.domain.site.type.Category;
+import com.nick_brogden.data_classification.domain.site.type.Status;
 import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
-@Table(name = "tasks")
-public class PostgresTask {
+@Table(name = "sites")
+public class PostgresSite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
