@@ -1,13 +1,13 @@
 package com.nick_brogden.data_classification.application.classification;
 
 import com.nick_brogden.data_classification.application.site.SiteDataRetriever;
-import com.nick_brogden.data_classification.domain.site.model.Metric;
 import com.nick_brogden.data_classification.domain.site.model.Site;
-import com.nick_brogden.data_classification.domain.site.type.Category;
+import com.nick_brogden.data_classification.domain.site.model.SiteData;
 import com.nick_brogden.data_classification.domain.site.type.Status;
 import com.nick_brogden.data_classification.port.SiteCommandPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +24,7 @@ public class ClassificationUseCase {
     private final SiteCommandPort commandPort;
     private final SiteDataRetriever dataRetriever;
 
+    @Async
     public void process(String email, List<String> domains) {
         commandPort.saveAll(domains.stream().map(domain -> Site.builder().domain(domain).status(Status.PENDING).build()).toList());
         List<Site> sites = processDomainsConcurrently(domains);
@@ -34,10 +35,11 @@ public class ClassificationUseCase {
     private List<Site> processDomainsConcurrently(List<String> domains) {
         List<CompletableFuture<Site>> futures = domains.stream()
                 .map(domain -> CompletableFuture.supplyAsync(() -> {
-                            Metric metric = buildSiteData(domain);
+                            SiteData siteData = buildSiteData(domain);
                             return commandPort.update(domain,
                                     Site.builder()
-                                            .metric(metric)
+                                            .categories(siteData.categories())
+                                            .content(siteData.content())
                                             .status(Status.COMPLETED)
                                             .build());
                         }, executor)
@@ -49,17 +51,11 @@ public class ClassificationUseCase {
         return waitForTasks(futures);
     }
 
-    private Metric buildSiteData(String domain) {
-        try {
-            String content = dataRetriever.retrieveContent(domain);
-            Category category = dataRetriever.retrieveCategory(content);
-            Object metrics = dataRetriever.retrieveMetrics(domain);
-
-            return new Metric(content, category, metrics);
-        } catch (RuntimeException e) {
-            commandPort.update(domain, Site.builder().status(Status.FAILED).logs(List.of(e.getMessage())).build());
-            throw e;
-        }
+    private SiteData buildSiteData(String domain) {
+        String content = dataRetriever.retrieveContent(domain);
+//        List<Category> categories = dataRetriever.retrieveCategories(domain, content);
+//        List<Metric> metrics = dataRetriever.retrieveMetrics(domain);
+        return new SiteData(content, null, null);
     }
 
     private List<Site> waitForTasks(List<CompletableFuture<Site>> futures) {

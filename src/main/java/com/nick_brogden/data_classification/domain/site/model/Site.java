@@ -9,11 +9,11 @@ import java.util.List;
 @Builder(toBuilder = true)
 public record Site(
         String domain,
-        Status status,
         String content,
+        Status status,
+        SiteData siteData,
         List<Category> categories,
-        List<String> logs,
-        Metric metric
+        List<String> logs
 ) {
 
 }

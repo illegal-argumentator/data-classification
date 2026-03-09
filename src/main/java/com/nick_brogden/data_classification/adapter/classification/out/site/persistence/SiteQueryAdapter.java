@@ -12,4 +12,5 @@ public class SiteQueryAdapter implements SiteQueryPort {
     public boolean existsByDomain(String domain) {
         return false;
     }
+
 }
