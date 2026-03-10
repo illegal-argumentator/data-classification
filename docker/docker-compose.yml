@@ -14,7 +14,7 @@ services:
     networks:
       - data-classification-net
     depends_on:
-      - ollama
+      - ollama-data-classification
       - postgres-data-classification
 
   ollama-data-classification:
