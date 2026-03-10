@@ -7,7 +7,9 @@ RUN mvn dependency:resolve
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-RUN ls -lh target
+
+FROM eclipse-temurin:21-jdk
+WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
@@ -30,11 +32,8 @@ RUN apt-get update && apt-get install -y \
     libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
-FROM eclipse-temurin:21-jdk
-WORKDIR /app
-
-COPY --from=build /build/target/data-classification*.jar data-classification.jar
+COPY --from=build /build/target/data-classification*.jar app.jar
 
 EXPOSE 9194
 
-CMD ["java", "-jar", "data-classification.jar"]
+CMD ["java", "-jar", "app.jar"]
