@@ -4,8 +4,7 @@ networks:
   data-classification-net:
 
 services:
-  application:
-    container_name: app-data-classification
+  app-data-classification:
     build:
       context: ..
       dockerfile: ./Dockerfile
@@ -18,9 +17,8 @@ services:
       - ollama
       - postgres-data-classification
 
-  ollama:
+  ollama-data-classification:
     image: ollama/ollama:latest
-    container_name: ollama-data-classification
     restart: unless-stopped
     ports:
       - "${OLLAMA_PORT}:11434"
