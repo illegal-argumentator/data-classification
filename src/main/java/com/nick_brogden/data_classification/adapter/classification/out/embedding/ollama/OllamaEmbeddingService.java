@@ -15,11 +15,21 @@ public class OllamaEmbeddingService implements EmbeddingService {
 
     private final OllamaEmbeddingModel embeddingModel;
 
+    private static final int MAX_OLLAMA_REQUEST_LENGTH = 10_000;
+
     @Override
     public float[] call(String payload) {
-        EmbeddingRequest request = new EmbeddingRequest(List.of(payload), null);
+        EmbeddingRequest request = new EmbeddingRequest(List.of(trimPayload(payload)), null);
         EmbeddingResponse response = embeddingModel.call(request);
         return response.getResult().getOutput();
+    }
+
+    private String trimPayload(String payload) {
+        if (payload != null && payload.length() > MAX_OLLAMA_REQUEST_LENGTH) {
+            return payload.trim().substring(0, MAX_OLLAMA_REQUEST_LENGTH);
+        }
+
+        return payload;
     }
 
 }
