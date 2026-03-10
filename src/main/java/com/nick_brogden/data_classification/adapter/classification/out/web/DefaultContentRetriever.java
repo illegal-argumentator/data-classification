@@ -22,7 +22,12 @@ public class DefaultContentRetriever implements DomainContentRetriever {
             localBrowser.navigate(UrlBuilder.buildByDomain(domain));
             localBrowser.waitForLoadState();
 
-            return localBrowser.text("body");
+            String text = localBrowser.text("body");
+            if (text == null || text.isBlank()) {
+                throw new RuntimeException("Site has no content or blocked bot activity.");
+            }
+
+            return text;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

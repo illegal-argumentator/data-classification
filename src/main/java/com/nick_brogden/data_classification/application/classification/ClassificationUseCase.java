@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -25,14 +26,13 @@ public class ClassificationUseCase {
     private final SiteDataRetriever dataRetriever;
 
     @Async
-    public void process(String email, List<String> domains) {
-        commandPort.saveAll(domains.stream().map(domain -> Site.builder().domain(domain).status(Status.PENDING).build()).toList());
+    public void process(String email, Set<String> domains) {
         List<Site> sites = processDomainsConcurrently(domains);
         // TODO convert sites to csv
         // TODO send data to email
     }
 
-    private List<Site> processDomainsConcurrently(List<String> domains) {
+    private List<Site> processDomainsConcurrently(Set<String> domains) {
         List<CompletableFuture<Site>> futures = domains.stream()
                 .map(domain -> CompletableFuture.supplyAsync(() -> {
                             SiteData siteData = buildSiteData(domain);
@@ -40,6 +40,7 @@ public class ClassificationUseCase {
                                     Site.builder()
                                             .categories(siteData.categories())
                                             .content(siteData.content())
+                                            .metrics(siteData.metrics())
                                             .status(Status.COMPLETED)
                                             .build());
                         }, executor)
@@ -52,10 +53,21 @@ public class ClassificationUseCase {
     }
 
     private SiteData buildSiteData(String domain) {
-        String content = dataRetriever.retrieveContent(domain);
-//        List<Category> categories = dataRetriever.retrieveCategories(domain, content);
-//        List<Metric> metrics = dataRetriever.retrieveMetrics(domain);
-        return new SiteData(content, null, null);
+        Site site = commandPort.ensureExists(domain);
+
+        if (site.content() == null || site.content().isBlank()) {
+            site = site.withContent(dataRetriever.retrieveContent(domain));
+        }
+
+        if (site.categories() == null || site.categories().isEmpty()) {
+            site = site.withCategories(dataRetriever.retrieveCategories(domain, site.content()));
+        }
+
+//        if (site.metrics() == null || site.metrics().isEmpty()) {
+//            site = site.withMetrics(dataRetriever.retrieveMetrics(domain));
+//        }
+
+        return new SiteData(site.content(), site.categories(), site.metrics());
     }
 
     private List<Site> waitForTasks(List<CompletableFuture<Site>> futures) {
