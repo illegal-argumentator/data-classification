@@ -14,6 +14,6 @@ WORKDIR /app
 
 COPY --from=build /build/target/data-classification*.jar data-classification.jar
 
-EXPOSE 8685
+EXPOSE 9194
 
 CMD ["java", "-jar", "data-classification.jar"]
