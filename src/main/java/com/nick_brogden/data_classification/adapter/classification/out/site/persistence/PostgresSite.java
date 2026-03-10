@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PostgresSite {
 
-    private static final int MAX_CONTENT_LENGTH = 2_000;
+    private static final int MAX_CONTENT_LENGTH = 1_000;
     private static final int MAX_LOGS_LENGTH = 100;
     private static final int MAX_LOG_LENGTH = 500;
 
@@ -53,6 +53,8 @@ public class PostgresSite {
         } else {
             this.content = content;
         }
+
+        System.out.println(content.length());
     }
 
     public void setLogs(List<String> logs) {
