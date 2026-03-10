@@ -15,7 +15,7 @@ public class OllamaEmbeddingService implements EmbeddingService {
 
     private final OllamaEmbeddingModel embeddingModel;
 
-    private static final int MAX_OLLAMA_REQUEST_LENGTH = 10_000;
+    private static final int MAX_OLLAMA_REQUEST_LENGTH = 1_000;
 
     @Override
     public float[] call(String payload) {
