@@ -18,6 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 public class PostgresSite {
 
+    private static final int MAX_CONTENT_LENGTH = 50_000;
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -31,7 +33,7 @@ public class PostgresSite {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> logs;
 
-    @Column(length = 30_000)
+    @Column(length = MAX_CONTENT_LENGTH)
     private String content;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -41,4 +43,11 @@ public class PostgresSite {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<PostgresMetric> metrics;
 
+    public void setContent(String content) {
+        if (content != null && content.length() > MAX_CONTENT_LENGTH) {
+            this.content = content.substring(0, MAX_CONTENT_LENGTH);
+        } else {
+            this.content = content;
+        }
+    }
 }

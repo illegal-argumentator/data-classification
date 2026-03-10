@@ -18,17 +18,6 @@ public class SiteCommandAdapter implements SiteCommandPort {
     private final SiteRepository repository;
 
     @Override
-    public void save(Site site) {
-        repository.findByDomain(site.domain())
-                .ifPresentOrElse(
-                        existing -> {
-                            throw new RuntimeException("Site already exists.");
-                        },
-                        () -> repository.save(mapper.toEntity(site))
-                );
-    }
-
-    @Override
     public Site ensureExists(String domain) {
         PostgresSite postgresSite = repository.findByDomain(domain)
                 .orElseGet(() -> {
