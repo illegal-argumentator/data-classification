@@ -12,7 +12,6 @@ public interface SiteMapper {
     Site toSite(PostgresSite entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "logs", ignore = true)
     void updateEntity(Site request, @MappingTarget PostgresSite entity);
 
 }

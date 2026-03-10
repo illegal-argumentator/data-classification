@@ -37,15 +37,6 @@ public class SiteCommandAdapter implements SiteCommandPort {
                 .orElseThrow(() -> new RuntimeException("Site does not exist."));
 
         mapper.updateEntity(site, existing);
-
-        Optional.ofNullable(site.logs()).ifPresent(logs -> {
-            if (existing.getLogs() == null) {
-                existing.setLogs(new ArrayList<>(site.logs()));
-            } else {
-                existing.getLogs().addAll(site.logs());
-            }
-        });
-
         repository.save(existing);
 
         return mapper.toSite(existing);
