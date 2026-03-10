@@ -19,7 +19,9 @@ import java.util.List;
 @AllArgsConstructor
 public class PostgresSite {
 
-    private static final int MAX_STRING_LENGTH = 50_000;
+    private static final int MAX_CONTENT_LENGTH = 2_000;
+    private static final int MAX_LOGS_LENGTH = 100;
+    private static final int MAX_LOG_LENGTH = 500;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -31,11 +33,11 @@ public class PostgresSite {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Column(length = MAX_STRING_LENGTH)
+    @Column(length = MAX_LOGS_LENGTH)
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> logs;
 
-    @Column(length = MAX_STRING_LENGTH)
+    @Column(length = MAX_CONTENT_LENGTH)
     private String content;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -46,27 +48,22 @@ public class PostgresSite {
     private List<PostgresMetric> metrics;
 
     public void setContent(String content) {
-        if (content != null && content.length() > MAX_STRING_LENGTH) {
-            this.content = content.substring(0, MAX_STRING_LENGTH);
+        if (content != null && content.length() > MAX_CONTENT_LENGTH) {
+            this.content = content.substring(0, MAX_CONTENT_LENGTH);
         } else {
             this.content = content;
         }
     }
 
     public void setLogs(List<String> logs) {
-        int logsLength = getLogsLength(this.logs);
-        int requestLogs = getLogsLength(logs);
+        List<String> formatterLogs = logs.stream()
+                .map(log -> log.length() > MAX_LOG_LENGTH ? log.substring(0, MAX_LOG_LENGTH) : log)
+                .toList();
 
-        if ((MAX_STRING_LENGTH - logsLength) > requestLogs) {
-            this.logs = new ArrayList<>(logs);
+        if ((MAX_LOGS_LENGTH - this.logs.size()) > logs.size()) {
+            this.logs = new ArrayList<>(formatterLogs);
         } else {
-            this.logs.addAll(logs);
+            this.logs.addAll(formatterLogs);
         }
-    }
-
-    private int getLogsLength(List<String> logs) {
-        return logs.stream()
-                .map(String::length)
-                .reduce(0, Integer::sum);
     }
 }
