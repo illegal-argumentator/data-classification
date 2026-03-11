@@ -2,7 +2,6 @@ package com.nick_brogden.data_classification.infrastructure;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;

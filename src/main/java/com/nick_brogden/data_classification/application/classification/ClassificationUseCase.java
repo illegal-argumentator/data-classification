@@ -1,10 +1,15 @@
 package com.nick_brogden.data_classification.application.classification;
 
 import com.nick_brogden.data_classification.application.site.SiteDataRetriever;
+import com.nick_brogden.data_classification.domain.group.exception.GroupAlreadyInProgressException;
+import com.nick_brogden.data_classification.domain.group.model.Group;
+import com.nick_brogden.data_classification.domain.group.type.ProgressState;
 import com.nick_brogden.data_classification.domain.site.model.Site;
 import com.nick_brogden.data_classification.domain.site.model.SiteData;
-import com.nick_brogden.data_classification.domain.site.type.Status;
-import com.nick_brogden.data_classification.port.SiteCommandPort;
+import com.nick_brogden.data_classification.port.EmailNotifier;
+import com.nick_brogden.data_classification.port.group.GroupCommandPort;
+import com.nick_brogden.data_classification.port.group.GroupQueryPort;
+import com.nick_brogden.data_classification.port.site.SiteCommandPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -22,45 +27,60 @@ import java.util.concurrent.Executor;
 public class ClassificationUseCase {
 
     private final Executor executor;
-    private final SiteCommandPort commandPort;
-    private final SiteDataRetriever dataRetriever;
+
+    private final SiteCommandPort siteCommandPort;
+    private final SiteDataRetriever siteDataRetriever;
+
+    private final GroupCommandPort groupCommandPort;
+    private final GroupQueryPort groupQueryPort;
+
+    private final EmailNotifier emailNotifier;
 
     @Async
     public void process(String email, Set<String> domains) {
-        List<Site> sites = processDomainsConcurrently(domains);
-        // TODO convert sites to csv
-        // TODO send data to email
+        throwIfAlreadyInProgress();
+
+        try {
+            Group group = groupCommandPort.save(ProgressState.IN_PROGRESS);
+            processDomainsConcurrently(group.id(), domains);
+            emailNotifier.send(email, group.id());
+        } catch (Exception e) {
+            groupCommandPort.fail(e.getMessage());
+        }
     }
 
-    private List<Site> processDomainsConcurrently(Set<String> domains) {
+    private void throwIfAlreadyInProgress() {
+        if (groupQueryPort.existsByState(ProgressState.IN_PROGRESS)) {
+            throw new GroupAlreadyInProgressException("Group already in progress.");
+        }
+    }
+
+    private void processDomainsConcurrently(String groupId, Set<String> domains) {
         List<CompletableFuture<Site>> futures = domains.stream()
                 .map(domain -> CompletableFuture.supplyAsync(() -> {
-                            SiteData siteData = buildSiteData(domain);
-                            return commandPort.update(domain,
-                                    Site.builder()
-                                            .categories(siteData.categories())
-                                            .content(siteData.content())
-                                            .metrics(siteData.metrics())
-                                            .status(Status.COMPLETED)
-                                            .build());
-                        }, executor)
-                        .exceptionally(ex -> {
-                            log.warn("Couldn't execute {}", domain, ex);
-                            return null;
-                        })).toList();
 
-        return waitForTasks(futures);
+                    SiteData siteData = buildSiteData(domain, groupId);
+                    return siteCommandPort.complete(domain, siteData);
+
+                }, executor).exceptionally(ex -> {
+                    log.warn("Couldn't execute {} - {}", domain, ex.getMessage());
+                    return null;
+                }))
+                .toList();
+
+        List<Site> sites = waitForTasks(futures);
+        groupCommandPort.complete(groupId, sites);
     }
 
-    private SiteData buildSiteData(String domain) {
-        Site site = commandPort.ensureExists(domain);
+    private SiteData buildSiteData(String domain, String groupId) {
+        Site site = siteCommandPort.ensureExists(domain, groupId);
 
         if (site.content() == null || site.content().isBlank()) {
-            site = site.withContent(dataRetriever.retrieveContent(domain));
+            site = site.withContent(siteDataRetriever.retrieveContent(domain));
         }
 
         if (site.categories() == null || site.categories().isEmpty()) {
-            site = site.withCategories(dataRetriever.retrieveCategories(domain, site.content()));
+            site = site.withCategories(siteDataRetriever.retrieveCategories(domain, site.content()));
         }
 
 //        if (site.metrics() == null || site.metrics().isEmpty()) {

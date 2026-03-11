@@ -5,6 +5,7 @@ import com.nick_brogden.data_classification.domain.site.model.Site;
 import com.nick_brogden.data_classification.domain.site.type.Category;
 import com.nick_brogden.data_classification.domain.site.type.Status;
 import com.nick_brogden.data_classification.port.*;
+import com.nick_brogden.data_classification.port.site.SiteCommandPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

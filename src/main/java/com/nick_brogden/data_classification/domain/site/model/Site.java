@@ -1,5 +1,6 @@
 package com.nick_brogden.data_classification.domain.site.model;
 
+import com.nick_brogden.data_classification.domain.group.model.Group;
 import com.nick_brogden.data_classification.domain.site.type.Category;
 import com.nick_brogden.data_classification.domain.site.type.Status;
 import lombok.Builder;
@@ -9,6 +10,8 @@ import java.util.List;
 
 @Builder(toBuilder = true)
 public record Site(
+        String id,
+        Group group,
         String domain,
         Status status,
         List<String> logs,
