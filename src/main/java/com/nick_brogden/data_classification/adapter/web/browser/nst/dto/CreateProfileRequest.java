@@ -7,9 +7,11 @@ public record CreateProfileRequest(
         Fingerprint fingerprint
 ) {
 
-    public record Fingerprint(Localization localization) {
-        public record Localization(String language, List<String> languages) {
+    public record Fingerprint(Localization localization, String timezone, Geo geo) {
+        public record Localization(String language, List<String> languages, String locale) {
         }
+
+        public record Geo(String country) {}
     }
 }
 
