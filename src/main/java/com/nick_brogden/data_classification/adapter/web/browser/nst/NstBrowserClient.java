@@ -29,6 +29,7 @@ public class NstBrowserClient implements ProfileService {
     @Override
     public CreateProfileResponse createProfile() {
         String json = objectMapper.writeValueAsString(buildRequest());
+        System.out.println(json);
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, json);
 
@@ -59,8 +60,8 @@ public class NstBrowserClient implements ProfileService {
         CreateProfileRequest.Fingerprint.Localization localization = new CreateProfileRequest.Fingerprint.Localization(
                 false,
                 "en-US",
-                List.of("en-US", "en"), "en-US", flags);
-        CreateProfileRequest.Fingerprint fingerprint = new CreateProfileRequest.Fingerprint(localization, "America/New_York", geo);
+                List.of("en-US", "en"), "en-US");
+        CreateProfileRequest.Fingerprint fingerprint = new CreateProfileRequest.Fingerprint(flags, localization, "America/New_York", geo);
         return new CreateProfileRequest(nstProperties.getGroupId(), "Windows", fingerprint);
     }
 

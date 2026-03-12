@@ -9,17 +9,24 @@ public record CreateProfileRequest(
         Fingerprint fingerprint
 ) {
 
-    public record Fingerprint(Localization localization, String timezone, Geo geo) {
+    public record Fingerprint(
+            Map<String, String> flags,
+            Localization localization,
+            String timezone,
+            Geo geo
+
+    ) {
+
         public record Localization(
                 boolean basedOnProxy,
                 String language,
                 List<String> languages,
-                String locale,
-                Map<String, String> flags
+                String locale
         ) {
         }
 
-        public record Geo(String country) {}
+        public record Geo(String country) {
+        }
     }
 }
 
