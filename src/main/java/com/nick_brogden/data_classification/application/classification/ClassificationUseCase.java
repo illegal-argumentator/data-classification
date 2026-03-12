@@ -42,8 +42,8 @@ public class ClassificationUseCase {
 
         try {
             Group group = groupCommandPort.save(ProgressState.IN_PROGRESS);
-            processDomainsConcurrently(group.id(), domains);
-            mailNotifier.notify(email, group.id());
+            List<Site> sites = processDomainsConcurrently(group.id(), domains);
+            if (!sites.isEmpty()) mailNotifier.notify(email, group.id());
         } catch (Exception e) {
             groupCommandPort.fail(e.getMessage());
         }
@@ -55,7 +55,7 @@ public class ClassificationUseCase {
         }
     }
 
-    private void processDomainsConcurrently(String groupId, Set<String> domains) {
+    private List<Site> processDomainsConcurrently(String groupId, Set<String> domains) {
         List<CompletableFuture<Site>> futures = domains.stream()
                 .map(domain -> CompletableFuture.supplyAsync(() -> {
 
@@ -70,6 +70,7 @@ public class ClassificationUseCase {
 
         List<Site> sites = waitForTasks(futures);
         groupCommandPort.complete(groupId, sites);
+        return sites;
     }
 
     private SiteData buildSiteData(String domain, String groupId) {

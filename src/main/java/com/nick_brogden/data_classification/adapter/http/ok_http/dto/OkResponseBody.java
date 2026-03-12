@@ -7,4 +7,9 @@ public record OkResponseBody(
         String body,
         int code
 ) {
+
+    public boolean isSuccessful() {
+        return code >= 200 && code <= 299;
+    }
+
 }

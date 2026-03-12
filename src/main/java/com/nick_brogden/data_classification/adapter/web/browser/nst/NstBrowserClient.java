@@ -3,9 +3,9 @@ package com.nick_brogden.data_classification.adapter.web.browser.nst;
 import com.nick_brogden.data_classification.adapter.http.ok_http.OkHttpService;
 import com.nick_brogden.data_classification.adapter.http.ok_http.dto.OkResponseBody;
 import com.nick_brogden.data_classification.adapter.web.browser.ProfileService;
+import com.nick_brogden.data_classification.adapter.web.browser.dto.CreateProfileResponse;
 import com.nick_brogden.data_classification.adapter.web.browser.nst.config.NstProperties;
 import com.nick_brogden.data_classification.adapter.web.browser.nst.dto.CreateProfileRequest;
-import com.nick_brogden.data_classification.adapter.web.browser.dto.CreateProfileResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
@@ -40,7 +40,13 @@ public class NstBrowserClient implements ProfileService {
                 .build();
 
         OkResponseBody execute = okHttpService.execute(request);
-        return objectMapper.readValue(execute.body(), CreateProfileResponse.class);
+        CreateProfileResponse response = objectMapper.readValue(execute.body(), CreateProfileResponse.class);
+
+        if (!execute.isSuccessful()) {
+            throw new RuntimeException(response.msg());
+        }
+
+        return response;
     }
 
     private CreateProfileRequest buildRequest() {
@@ -53,9 +59,9 @@ public class NstBrowserClient implements ProfileService {
         CreateProfileRequest.Fingerprint.Localization localization = new CreateProfileRequest.Fingerprint.Localization(
                 false,
                 "en-US",
-                List.of("en-US", "en"),"en-Us", flags);
+                List.of("en-US", "en"), "en-Us", flags);
         CreateProfileRequest.Fingerprint fingerprint = new CreateProfileRequest.Fingerprint(localization, "America/New_York", geo);
-        return new CreateProfileRequest("Windows" ,nstProperties.getGroupId(), fingerprint);
+        return new CreateProfileRequest(nstProperties.getGroupId(), "Windows", fingerprint);
     }
 
 }
