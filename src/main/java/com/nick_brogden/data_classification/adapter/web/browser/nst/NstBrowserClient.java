@@ -14,6 +14,7 @@ import okhttp3.RequestBody;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -43,10 +44,15 @@ public class NstBrowserClient implements ProfileService {
     }
 
     private CreateProfileRequest buildRequest() {
+        HashMap<String, String> flags = new HashMap<>();
+        flags.put("localization", "Custom");
+        flags.put("geolocation", "Custom");
+        flags.put("timezone", "Custom");
+
         CreateProfileRequest.Fingerprint.Geo geo = new CreateProfileRequest.Fingerprint.Geo("US");
         CreateProfileRequest.Fingerprint.Localization localization = new CreateProfileRequest.Fingerprint.Localization(
                 "en-US",
-                List.of("en-US", "en"),"en-Us");
+                List.of("en-US", "en"),"en-Us", flags);
         CreateProfileRequest.Fingerprint fingerprint = new CreateProfileRequest.Fingerprint(localization, "America/New_York", geo);
         return new CreateProfileRequest(nstProperties.getGroupId(), fingerprint);
     }
