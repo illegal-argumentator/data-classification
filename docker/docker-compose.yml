@@ -47,6 +47,10 @@ services:
     networks:
       - data-classification-net
     environment:
+      environment:
+      LANG: en_US.UTF-8
+      LANGUAGE: en_US:en
+      LC_ALL: en_US.UTF-8
       TOKEN: ${NST_TOKEN}
       VNC_PORT: ${VNC_PORT}
       VNC_PASSWORD: ${VNC_PASSWORD}

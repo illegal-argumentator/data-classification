@@ -11,6 +11,7 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
+    locales \
     libglib2.0-0 \
     libnss3 \
     libnspr4 \
@@ -28,8 +29,17 @@ RUN apt-get update && apt-get install -y \
     libdrm2 \
     libxcb1 \
     libxkbcommon0 \
-    libasound2t64 \
+    libasound2 \
+    libcairo2 \
+    libpango-1.0-0 \
+    libcups2 \
     && rm -rf /var/lib/apt/lists/*
+
+RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
+
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 COPY --from=build /build/target/data-classification*.jar app.jar
 
