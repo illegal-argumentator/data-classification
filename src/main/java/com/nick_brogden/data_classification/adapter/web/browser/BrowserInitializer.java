@@ -4,4 +4,6 @@ public interface BrowserInitializer {
 
     LocalBrowser initBrowser();
 
+    LocalBrowser initBrowser(String browserProfileId);
+
 }

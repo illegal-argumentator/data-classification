@@ -41,5 +41,18 @@ services:
     volumes:
       - data_classification_volume:/var/lib/postgresql/data
 
+  nstbrowserless-data-classification:
+    image: nstbrowser/browserless:143-202512151200.v1
+    restart: unless-stopped
+    networks:
+      - data-classification-net
+    environment:
+      TOKEN: ${NST_TOKEN}
+      VNC_PORT: ${VNC_PORT}
+      VNC_PASSWORD: ${VNC_PASSWORD}
+    ports:
+      - "${NST_PORT}:8848"
+      - "${VNC_PORT}:6900"
+
 volumes:
   data_classification_volume:

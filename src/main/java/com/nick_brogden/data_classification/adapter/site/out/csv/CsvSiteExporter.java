@@ -1,6 +1,7 @@
 package com.nick_brogden.data_classification.adapter.site.out.csv;
 
 import com.nick_brogden.data_classification.domain.site.model.Site;
+import com.nick_brogden.data_classification.domain.site.type.Category;
 import com.nick_brogden.data_classification.port.CsvExporter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -29,7 +30,7 @@ public class CsvSiteExporter implements CsvExporter<List<Site>> {
                 csvPrinter.printRecord(
                         site.id(),
                         site.domain(),
-                        site.categories(),
+                        String.join(", ", site.categories().stream().map(Category::getDisplayName).toList()),
                         site.metrics()
                 );
             }
