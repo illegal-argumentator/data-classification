@@ -11,7 +11,8 @@ public record CreateProfileRequest(
 
     public record Fingerprint(
             Map<String, String> flags,
-            Localization localization
+            Localization localization,
+            Geolocation geolocation
     ) {
 
         public record Localization(
@@ -20,6 +21,13 @@ public record CreateProfileRequest(
                 String language,
                 List<String> languages,
                 String locale
+        ) {
+        }
+
+        public record Geolocation(
+                String latitude,
+                String longitude,
+                String accuracy
         ) {
         }
     }
