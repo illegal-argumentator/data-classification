@@ -29,12 +29,12 @@ RUN apt-get update && apt-get install -y \
     libdrm2 \
     libxcb1 \
     libxkbcommon0 \
-    libasound2t64 \
+    libasound2 \
     libcairo2 \
     libpango-1.0-0 \
     libcups2 \
     libxcursor1 \
-    libgtk-3-0t64 \
+    libgtk-3-0 \
     libpangocairo-1.0-0 \
     libcairo-gobject2 \
     libgdk-pixbuf-2.0-0 \
@@ -47,7 +47,6 @@ RUN apt-get update && apt-get install -y \
     libvpx9 \
     libopus0 \
     libatomic1 \
-    libwoff2-1 \
     libflite1 \
     libwebpdemux2 \
     libavif16 \
@@ -58,8 +57,9 @@ RUN apt-get update && apt-get install -y \
     libhyphen0 \
     libwayland-server0 \
     libmanette-0.2-0 \
-    libgles2-mesa \
-    libx264-163 \
+    libgl1-mesa-glx \
+    libegl1-mesa \
+    libx264-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
