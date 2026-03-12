@@ -9,6 +9,5 @@ import org.mapstruct.Mapper;
 public interface GroupMapper {
 
     Group toGroup(PostgresGroup entity);
-    PostgresGroup toEntity(Group group);
 
 }

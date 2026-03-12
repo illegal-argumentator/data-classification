@@ -1,4 +1,4 @@
-package com.nick_brogden.data_classification.adapter.server.exception;
+package com.nick_brogden.data_classification.adapter.server.in.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;

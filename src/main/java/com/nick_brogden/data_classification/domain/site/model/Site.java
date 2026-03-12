@@ -7,21 +7,22 @@ import lombok.Builder;
 import lombok.With;
 
 import java.util.List;
+import java.util.Set;
 
 @Builder(toBuilder = true)
 public record Site(
         String id,
-        Group group,
+        Set<Group> groups,
         String domain,
         Status status,
         List<String> logs,
 
         @With
-        String content,
-        @With
         List<Category> categories,
         @With
-        List<Metric> metrics
+        List<Metric> metrics,
+        @With
+        String content
 ) {
 
 }

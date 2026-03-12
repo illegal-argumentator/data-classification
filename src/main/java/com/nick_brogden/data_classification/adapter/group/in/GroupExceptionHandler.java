@@ -1,6 +1,6 @@
 package com.nick_brogden.data_classification.adapter.group.in;
 
-import com.nick_brogden.data_classification.adapter.server.exception.ExceptionResponse;
+import com.nick_brogden.data_classification.adapter.server.in.exception.ExceptionResponse;
 import com.nick_brogden.data_classification.domain.group.exception.GroupAlreadyInProgressException;
 import com.nick_brogden.data_classification.domain.group.exception.GroupFailedException;
 import com.nick_brogden.data_classification.domain.group.exception.GroupIsInProgressException;

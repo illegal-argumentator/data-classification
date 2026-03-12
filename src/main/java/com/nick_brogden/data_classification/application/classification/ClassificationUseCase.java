@@ -6,7 +6,7 @@ import com.nick_brogden.data_classification.domain.group.model.Group;
 import com.nick_brogden.data_classification.domain.group.type.ProgressState;
 import com.nick_brogden.data_classification.domain.site.model.Site;
 import com.nick_brogden.data_classification.domain.site.model.SiteData;
-import com.nick_brogden.data_classification.port.EmailNotifier;
+import com.nick_brogden.data_classification.port.MailNotifier;
 import com.nick_brogden.data_classification.port.group.GroupCommandPort;
 import com.nick_brogden.data_classification.port.group.GroupQueryPort;
 import com.nick_brogden.data_classification.port.site.SiteCommandPort;
@@ -34,7 +34,7 @@ public class ClassificationUseCase {
     private final GroupCommandPort groupCommandPort;
     private final GroupQueryPort groupQueryPort;
 
-    private final EmailNotifier emailNotifier;
+    private final MailNotifier mailNotifier;
 
     @Async
     public void process(String email, Set<String> domains) {
@@ -43,7 +43,7 @@ public class ClassificationUseCase {
         try {
             Group group = groupCommandPort.save(ProgressState.IN_PROGRESS);
             processDomainsConcurrently(group.id(), domains);
-            emailNotifier.send(email, group.id());
+            mailNotifier.notify(email, group.id());
         } catch (Exception e) {
             groupCommandPort.fail(e.getMessage());
         }

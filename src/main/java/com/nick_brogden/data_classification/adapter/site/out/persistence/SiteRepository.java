@@ -3,6 +3,7 @@ package com.nick_brogden.data_classification.adapter.site.out.persistence;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface SiteRepository extends JpaRepository<PostgresSite, String> {
@@ -19,4 +20,17 @@ public interface SiteRepository extends JpaRepository<PostgresSite, String> {
             WHERE s.domain = :domain
             """)
     Optional<PostgresSite> findByDomain(String domain);
+
+    @Query("""
+            SELECT s
+            FROM PostgresSite s
+            LEFT JOIN FETCH s.logs
+            LEFT JOIN FETCH s.metrics
+            LEFT JOIN FETCH s.categories
+            LEFT JOIN FETCH s.groups g
+            WHERE g.id = :groupId
+            AND s.status = 'COMPLETED'
+            """)
+    List<PostgresSite> findAllCompletedByGroupId(String groupId);
+
 }
