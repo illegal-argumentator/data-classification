@@ -38,6 +38,28 @@ RUN apt-get update && apt-get install -y \
     libpangocairo-1.0-0 \
     libcairo-gobject2 \
     libgdk-pixbuf-2.0-0 \
+    gstreamer1.0-libav \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    libxslt1.1 \
+    libvpx9 \
+    libopus0 \
+    libatomic1 \
+    libwoff2-1 \
+    libflite1 \
+    libwebpdemux2 \
+    libavif16 \
+    libharfbuzz-icu0 \
+    libwebpmux3 \
+    libenchant-2-2 \
+    libsecret-1-0 \
+    libhyphen0 \
+    libwayland-server0 \
+    libmanette-0.2-0 \
+    libgles2-mesa \
+    libx264-163 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
@@ -45,6 +67,7 @@ RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
+ENV TZ=America/New_York
 
 COPY --from=build /build/target/data-classification*.jar app.jar
 

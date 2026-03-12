@@ -47,7 +47,7 @@ services:
     networks:
       - data-classification-net
     environment:
-      environment:
+      TZ: America/New_York
       LANG: en_US.UTF-8
       LANGUAGE: en_US:en
       LC_ALL: en_US.UTF-8

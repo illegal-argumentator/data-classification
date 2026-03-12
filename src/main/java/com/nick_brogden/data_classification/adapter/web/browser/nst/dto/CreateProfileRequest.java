@@ -5,6 +5,7 @@ import java.util.Map;
 
 public record CreateProfileRequest(
         String groupId,
+        String platform,
         Fingerprint fingerprint
 ) {
 
