@@ -10,6 +10,7 @@ public record CreateProfileRequest(
 
     public record Fingerprint(Localization localization, String timezone, Geo geo) {
         public record Localization(
+                boolean basedOnProxy,
                 String language,
                 List<String> languages,
                 String locale,
