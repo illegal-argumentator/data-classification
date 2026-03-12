@@ -11,21 +11,16 @@ public record CreateProfileRequest(
 
     public record Fingerprint(
             Map<String, String> flags,
-            Localization localization,
-            String timezone,
-            Geo geo
-
+            Localization localization
     ) {
 
         public record Localization(
+                String timezone,
                 boolean basedOnProxy,
                 String language,
                 List<String> languages,
                 String locale
         ) {
-        }
-
-        public record Geo(String country) {
         }
     }
 }

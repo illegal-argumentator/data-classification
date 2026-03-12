@@ -56,12 +56,12 @@ public class NstBrowserClient implements ProfileService {
         flags.put("geolocation", "Custom");
         flags.put("timezone", "Custom");
 
-        CreateProfileRequest.Fingerprint.Geo geo = new CreateProfileRequest.Fingerprint.Geo("US");
         CreateProfileRequest.Fingerprint.Localization localization = new CreateProfileRequest.Fingerprint.Localization(
+                "America/New_York",
                 false,
                 "en-US",
                 List.of("en-US", "en"), "en-US");
-        CreateProfileRequest.Fingerprint fingerprint = new CreateProfileRequest.Fingerprint(flags, localization, "America/New_York", geo);
+        CreateProfileRequest.Fingerprint fingerprint = new CreateProfileRequest.Fingerprint(flags, localization);
         return new CreateProfileRequest(nstProperties.getGroupId(), "Windows", fingerprint);
     }
 
