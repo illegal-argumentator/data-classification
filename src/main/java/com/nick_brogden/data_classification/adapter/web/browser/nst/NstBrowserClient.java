@@ -14,6 +14,8 @@ import okhttp3.RequestBody;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,9 +27,7 @@ public class NstBrowserClient implements ProfileService {
 
     @Override
     public CreateProfileResponse createProfile() {
-        CreateProfileRequest createProfileRequest = new CreateProfileRequest(nstProperties.getGroupId());
-        String json = objectMapper.writeValueAsString(createProfileRequest);
-
+        String json = objectMapper.writeValueAsString(buildRequest());
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, json);
 
@@ -41,4 +41,11 @@ public class NstBrowserClient implements ProfileService {
         OkResponseBody execute = okHttpService.execute(request);
         return objectMapper.readValue(execute.body(), CreateProfileResponse.class);
     }
+
+    private CreateProfileRequest buildRequest() {
+        CreateProfileRequest.Fingerprint.Localization localization = new CreateProfileRequest.Fingerprint.Localization("en-US", List.of("en-US", "en"));
+        CreateProfileRequest.Fingerprint fingerprint = new CreateProfileRequest.Fingerprint(localization);
+        return new CreateProfileRequest(nstProperties.getGroupId(), fingerprint);
+    }
+
 }
