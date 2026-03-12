@@ -29,7 +29,6 @@ public class NstBrowserClient implements ProfileService {
     @Override
     public CreateProfileResponse createProfile() {
         String json = objectMapper.writeValueAsString(buildRequest());
-        System.out.println(json);
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, json);
 
@@ -41,13 +40,13 @@ public class NstBrowserClient implements ProfileService {
                 .build();
 
         OkResponseBody execute = okHttpService.execute(request);
-        CreateProfileResponse response = objectMapper.readValue(execute.body(), CreateProfileResponse.class);
 
         if (!execute.isSuccessful()) {
-            throw new RuntimeException(response.msg());
+            log.error("NST response error: {}", execute.body());
+            throw new RuntimeException("NST API error: " + execute.body());
         }
 
-        return response;
+        return objectMapper.readValue(execute.body(), CreateProfileResponse.class);
     }
 
     private CreateProfileRequest buildRequest() {
