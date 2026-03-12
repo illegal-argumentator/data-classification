@@ -32,6 +32,7 @@ public class PlaywrightBrowser implements LocalBrowser {
         return page.locator(selector).innerText();
     }
 
+    @Override
     public void close() {
         if (!CollectionUtils.isEmpty(autoCloseables)) {
             for (AutoCloseable ac : autoCloseables) {
@@ -41,14 +42,6 @@ public class PlaywrightBrowser implements LocalBrowser {
                     log.error("Failed to close resource: {}", e.getMessage(), e);
                 }
             }
-        }
-
-        try {
-            if (page != null) {
-                page.close();
-            }
-        } catch (Exception e) {
-            log.error("Failed to close page: {}", e.getMessage(), e);
         }
     }
 }
