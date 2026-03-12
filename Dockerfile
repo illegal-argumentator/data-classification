@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y \
     libdrm2 \
     libxcb1 \
     libxkbcommon0 \
-    libasound2 \
+    libasound2t64 \
     libcairo2 \
     libpango-1.0-0 \
     libcups2 \
@@ -57,8 +57,8 @@ RUN apt-get update && apt-get install -y \
     libhyphen0 \
     libwayland-server0 \
     libmanette-0.2-0 \
-    libgl1-mesa-glx \
-    libegl1-mesa \
+    libgl1 \
+    libegl1 \
     libx264-dev \
     && rm -rf /var/lib/apt/lists/*
 
