@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -19,23 +21,29 @@ public class DefaultCategoryClassifier implements CategoryClassifier {
     @Value("${embedding.treshold}")
     private float EMBEDDING_THRESHOLD;
 
+    @Value("${embedding.limit}")
+    private int EMBEDDING_LIMIT;
+
     private final EmbeddingService embeddingService;
     private final EmbeddedCategoryService embeddedCategoryService;
     private final CosineSimilarityService cosineSimilarityService;
 
     @Override
-    public List<Category> classify(String content) {
+    public Set<Category> classify(String content) {
         float[] contentEmbedding = embeddingService.call(content);
         Map<Category, float[]> categoryEmbeddings = embeddedCategoryService.get();
 
-        ArrayList<Category> categories = new ArrayList<>();
-
+        List<Map.Entry<Category, Double>> similarities = new ArrayList<>();
         for (Map.Entry<Category, float[]> entry : categoryEmbeddings.entrySet()) {
             double similarity = cosineSimilarityService.calcSimilarity(contentEmbedding, entry.getValue());
-            if (similarity >= EMBEDDING_THRESHOLD) categories.add(entry.getKey());
+            if (similarity >= EMBEDDING_THRESHOLD) similarities.add(Map.entry(entry.getKey(), similarity));
         }
+        similarities.sort((e1, e2) -> Double.compare(e2.getValue(), e1.getValue()));
 
-        return categories;
+        return similarities.stream()
+                .limit(EMBEDDING_LIMIT)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
 }

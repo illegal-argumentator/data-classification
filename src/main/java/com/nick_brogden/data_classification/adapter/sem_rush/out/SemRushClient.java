@@ -2,7 +2,7 @@ package com.nick_brogden.data_classification.adapter.sem_rush.out;
 
 import com.nick_brogden.data_classification.adapter.http.ok_http.OkHttpService;
 import com.nick_brogden.data_classification.adapter.http.ok_http.dto.OkResponseBody;
-import com.nick_brogden.data_classification.adapter.csv.CsvReader;
+import com.nick_brogden.data_classification.port.CsvReader;
 import com.nick_brogden.data_classification.adapter.sem_rush.out.mapper.MetricMapper;
 import com.nick_brogden.data_classification.adapter.sem_rush.out.path.SemRushPathService;
 import com.nick_brogden.data_classification.domain.site.model.Metric;
@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class SemRushClient implements DomainMetricsProvider {
     private final SemRushPathService pathService;
 
     @Override
-    public List<Metric> provide(String domain) {
+    public Set<Metric> provide(String domain) {
         Request request = new Request.Builder()
                 .url(pathService.getDomainSearch(domain))
                 .get()
@@ -34,8 +36,8 @@ public class SemRushClient implements DomainMetricsProvider {
 
     }
 
-    private List<Metric> parseMetrics(String body) {
+    private Set<Metric> parseMetrics(String body) {
         List<Map<String, String>> parse = csvReader.parse(body);
-        return parse.stream().map(MetricMapper::toMetric).toList();
+        return parse.stream().map(MetricMapper::toMetric).collect(Collectors.toSet());
     }
 }

@@ -6,7 +6,7 @@ import com.nick_brogden.data_classification.domain.site.type.Status;
 import lombok.Builder;
 import lombok.With;
 
-import java.util.List;
+import java.time.Instant;
 import java.util.Set;
 
 @Builder(toBuilder = true)
@@ -15,14 +15,17 @@ public record Site(
         Set<Group> groups,
         String domain,
         Status status,
-        List<String> logs,
+        Set<String> logs,
 
         @With
-        List<Category> categories,
+        Set<Category> categories,
         @With
-        List<Metric> metrics,
+        Set<Metric> metrics,
         @With
-        String content
+        String content,
+
+        Instant createdAt,
+        Instant updatedAt
 ) {
 
 }

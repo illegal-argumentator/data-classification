@@ -1,5 +1,6 @@
-package com.nick_brogden.data_classification.adapter.csv;
+package com.nick_brogden.data_classification.adapter.sem_rush.out;
 
+import com.nick_brogden.data_classification.port.CsvReader;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

@@ -4,6 +4,6 @@ import com.nick_brogden.data_classification.adapter.web.browser.dto.CreateProfil
 
 public interface ProfileService {
 
-    CreateProfileResponse createProfile();
+    CreateProfileResponse create();
 
 }

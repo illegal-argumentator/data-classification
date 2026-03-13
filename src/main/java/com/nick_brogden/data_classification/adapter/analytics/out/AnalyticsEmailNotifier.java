@@ -4,10 +4,8 @@ import com.nick_brogden.data_classification.adapter.mail.out.MailSender;
 import com.nick_brogden.data_classification.adapter.server.out.config.AppProps;
 import com.nick_brogden.data_classification.port.MailNotifier;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AnalyticsEmailNotifier implements MailNotifier {
@@ -32,7 +30,6 @@ public class AnalyticsEmailNotifier implements MailNotifier {
     @Override
     public void notify(String to, String text) {
         mailSender.send(SUBJECT, to, CONTENT_TEMPLATE.formatted(buildDownloadLink(text)));
-        log.info("Successfully sent email to {}.", to);
     }
 
     private String buildDownloadLink(String groupId) {

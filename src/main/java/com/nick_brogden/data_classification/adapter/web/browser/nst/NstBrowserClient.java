@@ -27,7 +27,7 @@ public class NstBrowserClient implements ProfileService {
     private final NstProperties nstProperties;
 
     @Override
-    public CreateProfileResponse createProfile() {
+    public CreateProfileResponse create() {
         String json = objectMapper.writeValueAsString(buildRequest());
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, json);

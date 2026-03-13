@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -31,14 +31,14 @@ public class SiteUseCase implements SiteDataRetriever {
     }
 
     @Override
-    public List<Category> retrieveCategories(String domain, String content) {
+    public Set<Category> retrieveCategories(String domain, String content) {
         log.info("Started retrieving categories on {}.", domain);
         Site updateSite = commandPort.update(domain, Site.builder().status(Status.CATEGORIZATION).build());
         return getOnFail(updateSite, () -> categoryClassifier.classify(content));
     }
 
     @Override
-    public List<Metric> retrieveMetrics(String domain) {
+    public Set<Metric> retrieveMetrics(String domain) {
         log.info("Started retrieving metrics on {}.", domain);
         Site updateSite = commandPort.update(domain, Site.builder().status(Status.METRIC_POPULATION).build());
         return getOnFail(updateSite, () -> metricsProvider.provide(domain));
@@ -48,7 +48,7 @@ public class SiteUseCase implements SiteDataRetriever {
         try {
             return supplier.get();
         } catch (Exception e) {
-            commandPort.update(site.domain(), Site.builder().status(Status.FAILED).logs(List.of("Failed on " + site.status() + " - " + e.getMessage())).build());
+            commandPort.update(site.domain(), Site.builder().status(Status.FAILED).logs(Set.of("Failed on " + site.status() + " - " + e.getMessage())).build());
             throw e;
         }
     }

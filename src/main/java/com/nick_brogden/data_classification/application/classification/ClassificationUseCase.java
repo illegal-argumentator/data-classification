@@ -1,6 +1,7 @@
 package com.nick_brogden.data_classification.application.classification;
 
 import com.nick_brogden.data_classification.application.site.SiteDataRetriever;
+import com.nick_brogden.data_classification.bootstrap.FlowStepProperties;
 import com.nick_brogden.data_classification.domain.group.exception.GroupAlreadyInProgressException;
 import com.nick_brogden.data_classification.domain.group.model.Group;
 import com.nick_brogden.data_classification.domain.group.type.ProgressState;
@@ -36,14 +37,16 @@ public class ClassificationUseCase {
 
     private final MailNotifier mailNotifier;
 
+    private final FlowStepProperties props;
+
     @Async
     public void process(String email, Set<String> domains) {
         throwIfAlreadyInProgress();
 
         try {
             Group group = groupCommandPort.save(ProgressState.IN_PROGRESS);
-            List<Site> sites = processDomainsConcurrently(group.id(), domains);
-            if (!sites.isEmpty()) mailNotifier.notify(email, group.id());
+            processDomainsConcurrently(group.id(), domains);
+            mailNotifier.notify(email, group.id());
         } catch (Exception e) {
             groupCommandPort.fail(e.getMessage());
         }
@@ -55,7 +58,7 @@ public class ClassificationUseCase {
         }
     }
 
-    private List<Site> processDomainsConcurrently(String groupId, Set<String> domains) {
+    private void processDomainsConcurrently(String groupId, Set<String> domains) {
         List<CompletableFuture<Site>> futures = domains.stream()
                 .map(domain -> CompletableFuture.supplyAsync(() -> {
 
@@ -70,23 +73,22 @@ public class ClassificationUseCase {
 
         List<Site> sites = waitForTasks(futures);
         groupCommandPort.complete(groupId, sites);
-        return sites;
     }
 
     private SiteData buildSiteData(String domain, String groupId) {
         Site site = siteCommandPort.ensureExists(domain, groupId);
 
-        if (site.content() == null || site.content().isBlank()) {
+        if ((site.content() == null || site.content().isBlank()) && !props.getContentRetriever().isDisabled()) {
             site = site.withContent(siteDataRetriever.retrieveContent(domain));
         }
 
-        if (site.categories() == null || site.categories().isEmpty()) {
+        if ((site.categories() == null || site.categories().isEmpty()) && !props.getCategorization().isDisabled()) {
             site = site.withCategories(siteDataRetriever.retrieveCategories(domain, site.content()));
         }
 
-//        if (site.metrics() == null || site.metrics().isEmpty()) {
-//            site = site.withMetrics(dataRetriever.retrieveMetrics(domain));
-//        }
+        if ((site.metrics() == null || site.metrics().isEmpty()) && !props.getMetrics().isDisabled()) {
+            site = site.withMetrics(siteDataRetriever.retrieveMetrics(domain));
+        }
 
         return new SiteData(site.content(), site.categories(), site.metrics());
     }

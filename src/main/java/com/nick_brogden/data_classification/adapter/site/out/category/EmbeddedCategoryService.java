@@ -20,7 +20,7 @@ public class EmbeddedCategoryService {
         HashMap<Category, float[]> categoryEmbeddings = new HashMap<>();
 
         for (Category category : Category.values()) {
-            float[] embedding = embeddingService.call(category.getDisplayName());
+            float[] embedding = embeddingService.call(category.getDisplayDescription());
             categoryEmbeddings.put(category, embedding);
         }
 

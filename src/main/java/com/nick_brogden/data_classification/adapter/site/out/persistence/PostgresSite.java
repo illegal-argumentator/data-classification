@@ -8,10 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Entity
@@ -23,7 +27,7 @@ public class PostgresSite {
 
     private static final int MAX_CONTENT_LENGTH = 50_000;
     private static final int MAX_LOGS_LIST_LENGTH = 5_000;
-    private static final int MAX_LOG_LENGTH = 500;
+    private static final int MAX_LOG_LENGTH = 200;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -52,6 +56,12 @@ public class PostgresSite {
     @ElementCollection
     private Set<PostgresMetric> metrics;
 
+    @CreatedDate
+    private Instant createdAt;
+
+    @LastModifiedDate
+    private Instant updatedAt;
+
     public void setContent(String content) {
         if (content != null && content.length() > MAX_CONTENT_LENGTH) {
             this.content = content.substring(0, MAX_CONTENT_LENGTH);
@@ -61,9 +71,9 @@ public class PostgresSite {
     }
 
     public void setLogs(List<String> logs) {
-        List<String> formatterLogs = logs.stream()
+        Set<String> formatterLogs = logs.stream()
                 .map(log -> log.length() > MAX_LOG_LENGTH ? log.substring(0, MAX_LOG_LENGTH) + "...\n" : log)
-                .toList();
+                .collect(Collectors.toSet());
 
         if ((MAX_LOGS_LIST_LENGTH - this.logs.size()) > logs.size()) {
             this.logs = new HashSet<>(formatterLogs);

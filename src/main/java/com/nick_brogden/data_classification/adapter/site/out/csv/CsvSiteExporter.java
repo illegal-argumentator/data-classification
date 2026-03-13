@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class CsvSiteExporter implements CsvExporter<List<Site>> {
 
-    private static final String[] HEADERS = new String[]{"id", "domain", "categories", "metrics"};
+    private static final String[] HEADERS = new String[]{"id", "domain", "categories", "metrics", "created_at"};
 
     @Override
     public byte[] export(List<Site> data) {
@@ -30,8 +30,9 @@ public class CsvSiteExporter implements CsvExporter<List<Site>> {
                 csvPrinter.printRecord(
                         site.id(),
                         site.domain(),
-                        String.join(", ", site.categories().stream().map(Category::getDisplayName).toList()),
-                        site.metrics()
+                        String.join(", ", site.categories().stream().map(Category::getShortName).toList()),
+                        site.metrics().isEmpty() ? "" : site.metrics(),
+                        site.createdAt()
                 );
             }
 
